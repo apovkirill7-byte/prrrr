@@ -420,6 +420,68 @@ const Profile = () => {
 
             {/* Recent Activity & Subscription */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {/* Resources Section - Checklists, Guides, Collections, Recommendations */}
+              <Card className="border-border md:col-span-2">
+                <CardHeader>
+                  <CardTitle>Мои материалы</CardTitle>
+                  <CardDescription>Доступные образовательные ресурсы</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* Checklists */}
+                    <div className="bg-muted/50 rounded-lg p-4 hover:bg-muted transition-all cursor-pointer">
+                      <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center mb-3 shadow-glow">
+                        <span className="text-primary-foreground font-bold">✓</span>
+                      </div>
+                      <h4 className="font-semibold mb-1">Чек-листы</h4>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Пошаговые списки для эффективного обучения
+                      </p>
+                      <p className="text-sm font-medium text-primary">5 доступно</p>
+                    </div>
+
+                    {/* Guides */}
+                    <div className="bg-muted/50 rounded-lg p-4 hover:bg-muted transition-all cursor-pointer">
+                      <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center mb-3 shadow-glow">
+                        <span className="text-primary-foreground font-bold">📘</span>
+                      </div>
+                      <h4 className="font-semibold mb-1">Гайды</h4>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Подробные руководства по темам
+                      </p>
+                      <p className="text-sm font-medium text-primary">8 доступно</p>
+                    </div>
+
+                    {/* Collections */}
+                    <div className="bg-muted/50 rounded-lg p-4 hover:bg-muted transition-all cursor-pointer">
+                      <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center mb-3 shadow-glow">
+                        <span className="text-primary-foreground font-bold">📚</span>
+                      </div>
+                      <h4 className="font-semibold mb-1">Подборки</h4>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Кураторские подборки материалов
+                      </p>
+                      <p className="text-sm font-medium text-primary">12 доступно</p>
+                    </div>
+
+                    {/* Personal Recommendations */}
+                    <div className="bg-muted/50 rounded-lg p-4 hover:bg-muted transition-all cursor-pointer">
+                      <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center mb-3 shadow-glow">
+                        <span className="text-primary-foreground font-bold">⭐</span>
+                      </div>
+                      <h4 className="font-semibold mb-1">Рекомендации</h4>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Персональные советы по обучению
+                      </p>
+                      <p className="text-sm font-medium text-primary">3 новых</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recent Activity & Subscription */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
               <Card className="border-border">
                 <CardHeader>
                   <CardTitle>Недавняя активность</CardTitle>

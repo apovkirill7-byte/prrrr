@@ -53,9 +53,6 @@ export const Footer = () => {
                   Партнёрская программа
                 </Link>
               </li>
-              <li>
-                
-              </li>
             </ul>
           </div>
         </div>
