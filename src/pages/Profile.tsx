@@ -4,20 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { PromoCodeInput } from "@/components/PromoCodeInput";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ReferralProgram } from "@/components/ReferralProgram";
-import { Flame, Clock, Trophy, TrendingUp, Crown, LogOut, Info, Target } from "lucide-react";
+import { Flame, Clock, Trophy, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 const Profile = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -28,159 +20,7 @@ const Profile = () => {
 
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showTermsDialog, setShowTermsDialog] = useState(false);
-  const [showTasksDialog, setShowTasksDialog] = useState(false);
-  const [userTasks, setUserTasks] = useState<any[]>([]);
-  const [totalPoints, setTotalPoints] = useState(0);
-  const [hasSubscription] = useState(true);
-
-  const tasks = [
-    { id: "task_1", title: "Пройди чек-лист по книге", points: 30 },
-    { id: "task_2", title: "Пригласи друга", points: 100 },
-    { id: "task_3", title: "Прочитай 3 книги подряд", points: 50 },
-    { id: "task_4", title: "Пройди курс полностью", points: 200 },
-    { id: "task_5", title: "Оставь отзыв о платформе", points: 25 },
-  ];
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      loadUserTasks();
-      loadUserPoints();
-    }
-  }, [isLoggedIn]);
-
-  const loadUserTasks = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from('user_tasks')
-      .select('*')
-      .eq('user_id', user.id);
-
-    if (error) {
-      console.error('Error loading tasks:', error);
-      return;
-    }
-
-    setUserTasks(data || []);
-  };
-
-  const loadUserPoints = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from('user_points')
-      .select('total_points')
-      .eq('user_id', user.id)
-      .single();
-
-    if (error && error.code !== 'PGRST116') {
-      console.error('Error loading points:', error);
-      return;
-    }
-
-    setTotalPoints(data?.total_points || 0);
-  };
-
-  const getTaskStatus = (taskId: string) => {
-    const userTask = userTasks.find(t => t.task_id === taskId);
-    return userTask;
-  };
-
-  const handleStartTask = async (taskId: string, points: number) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const existingTask = getTaskStatus(taskId);
-    if (existingTask) {
-      toast({
-        title: "Задание уже начато",
-        description: "Это задание уже в процессе выполнения.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const { error } = await supabase
-      .from('user_tasks')
-      .insert({
-        user_id: user.id,
-        task_id: taskId,
-        started_at: new Date().toISOString(),
-        points_earned: points,
-      });
-
-    if (error) {
-      console.error('Error starting task:', error);
-      toast({
-        title: "Ошибка",
-        description: "Не удалось начать задание.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "Задание начато!",
-      description: "Таймер на 24 часа запущен. Удачи!",
-    });
-
-    await loadUserTasks();
-    checkTaskCompletion(taskId, points);
-  };
-
-  const checkTaskCompletion = async (taskId: string, points: number) => {
-    setTimeout(async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { error } = await supabase
-        .from('user_tasks')
-        .update({
-          completed_at: new Date().toISOString(),
-        })
-        .eq('user_id', user.id)
-        .eq('task_id', taskId)
-        .is('completed_at', null);
-
-      if (error) {
-        console.error('Error completing task:', error);
-        return;
-      }
-
-      // Update user points
-      const { data: existingPoints } = await supabase
-        .from('user_points')
-        .select('total_points')
-        .eq('user_id', user.id)
-        .single();
-
-      if (existingPoints) {
-        await supabase
-          .from('user_points')
-          .update({
-            total_points: existingPoints.total_points + points,
-          })
-          .eq('user_id', user.id);
-      } else {
-        await supabase
-          .from('user_points')
-          .insert({
-            user_id: user.id,
-            total_points: points,
-          });
-      }
-
-      toast({
-        title: "Задание выполнено!",
-        description: `Вы получили ${points} баллов!`,
-      });
-
-      await loadUserTasks();
-      await loadUserPoints();
-    }, 24 * 60 * 60 * 1000); // 24 hours
-  };
+  const [currentPlan] = useState("free"); // free, medium, plus, premium
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -333,7 +173,7 @@ const Profile = () => {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <Card className="border-border hover:border-primary/50 transition-all hover:shadow-glow h-full">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -381,106 +221,173 @@ const Profile = () => {
                   </p>
                 </CardContent>
               </Card>
-
-              <Card className="border-border hover:border-primary/50 transition-all hover:shadow-glow h-full">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-primary" />
-                    Баллы
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <button 
-                          className="ml-1 p-1.5 rounded-full hover:bg-muted transition-colors group"
-                          aria-label="Информация о баллах"
-                        >
-                          <Info className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                        </button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-md">
-                        <DialogHeader>
-                          <DialogTitle className="text-xl">Баллы — это твоя выгода</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-3 text-sm leading-relaxed">
-                          <p>Получай <span className="font-semibold text-primary">10%</span> с покупок друзей по реферальной ссылке.</p>
-                          <p>Выполняй задания и зарабатывай ещё больше.</p>
-                          <p>Обменивай баллы на скидку и экономь на обучении.</p>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{totalPoints.toLocaleString()}</div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Доступно для обмена
-                  </p>
-                </CardContent>
-              </Card>
             </div>
 
-            {/* Recent Activity & Subscription */}
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
-              {/* Resources Section - Checklists, Guides, Collections, Recommendations */}
-              <Card className="border-border md:col-span-2">
-                <CardHeader>
-                  <CardTitle>Мои материалы</CardTitle>
-                  <CardDescription>Доступные образовательные ресурсы</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {/* Checklists */}
-                    <div className="bg-muted/50 rounded-lg p-4 hover:bg-muted transition-all cursor-pointer">
-                      <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center mb-3 shadow-glow">
-                        <span className="text-primary-foreground font-bold">✓</span>
-                      </div>
-                      <h4 className="font-semibold mb-1">Чек-листы</h4>
-                      <p className="text-xs text-muted-foreground mb-2">
-                        Пошаговые списки для эффективного обучения
-                      </p>
-                      <p className="text-sm font-medium text-primary">5 доступно</p>
+            {/* Resources Section - Checklists, Guides, Collections, Recommendations */}
+            <Card className="border-border mb-8">
+              <CardHeader>
+                <CardTitle>Мои материалы</CardTitle>
+                <CardDescription>Доступные образовательные ресурсы</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Checklists */}
+                  <div className="bg-muted/50 rounded-lg p-4 hover:bg-muted transition-all cursor-pointer">
+                    <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center mb-3 shadow-glow">
+                      <span className="text-primary-foreground font-bold">✓</span>
                     </div>
-
-                    {/* Guides */}
-                    <div className="bg-muted/50 rounded-lg p-4 hover:bg-muted transition-all cursor-pointer">
-                      <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center mb-3 shadow-glow">
-                        <span className="text-primary-foreground font-bold">📘</span>
-                      </div>
-                      <h4 className="font-semibold mb-1">Гайды</h4>
-                      <p className="text-xs text-muted-foreground mb-2">
-                        Подробные руководства по темам
-                      </p>
-                      <p className="text-sm font-medium text-primary">8 доступно</p>
-                    </div>
-
-                    {/* Collections */}
-                    <div className="bg-muted/50 rounded-lg p-4 hover:bg-muted transition-all cursor-pointer">
-                      <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center mb-3 shadow-glow">
-                        <span className="text-primary-foreground font-bold">📚</span>
-                      </div>
-                      <h4 className="font-semibold mb-1">Подборки</h4>
-                      <p className="text-xs text-muted-foreground mb-2">
-                        Кураторские подборки материалов
-                      </p>
-                      <p className="text-sm font-medium text-primary">12 доступно</p>
-                    </div>
-
-                    {/* Personal Recommendations */}
-                    <div className="bg-muted/50 rounded-lg p-4 hover:bg-muted transition-all cursor-pointer">
-                      <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center mb-3 shadow-glow">
-                        <span className="text-primary-foreground font-bold">⭐</span>
-                      </div>
-                      <h4 className="font-semibold mb-1">Рекомендации</h4>
-                      <p className="text-xs text-muted-foreground mb-2">
-                        Персональные советы по обучению
-                      </p>
-                      <p className="text-sm font-medium text-primary">3 новых</p>
-                    </div>
+                    <h4 className="font-semibold mb-1">Чек-листы</h4>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Пошаговые списки для эффективного обучения
+                    </p>
+                    <p className="text-sm font-medium text-primary">
+                      {currentPlan === "free" ? "Недоступно" : "5 доступно"}
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
 
-            {/* Recent Activity & Subscription */}
+                  {/* Guides */}
+                  <div className="bg-muted/50 rounded-lg p-4 hover:bg-muted transition-all cursor-pointer">
+                    <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center mb-3 shadow-glow">
+                      <span className="text-primary-foreground font-bold">📘</span>
+                    </div>
+                    <h4 className="font-semibold mb-1">Гайды</h4>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Подробные руководства по темам
+                    </p>
+                    <p className="text-sm font-medium text-primary">
+                      {currentPlan === "free" ? "Недоступно" : "8 доступно"}
+                    </p>
+                  </div>
+
+                  {/* Collections */}
+                  <div className="bg-muted/50 rounded-lg p-4 hover:bg-muted transition-all cursor-pointer">
+                    <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center mb-3 shadow-glow">
+                      <span className="text-primary-foreground font-bold">📚</span>
+                    </div>
+                    <h4 className="font-semibold mb-1">Подборки</h4>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Кураторские подборки материалов
+                    </p>
+                    <p className="text-sm font-medium text-primary">
+                      {currentPlan === "plus" || currentPlan === "premium" ? "12 доступно" : "Недоступно"}
+                    </p>
+                  </div>
+
+                  {/* Personal Recommendations */}
+                  <div className="bg-muted/50 rounded-lg p-4 hover:bg-muted transition-all cursor-pointer">
+                    <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center mb-3 shadow-glow">
+                      <span className="text-primary-foreground font-bold">⭐</span>
+                    </div>
+                    <h4 className="font-semibold mb-1">Рекомендации</h4>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Персональные советы по обучению
+                    </p>
+                    <p className="text-sm font-medium text-primary">
+                      {currentPlan === "premium" ? "3 новых" : "Недоступно"}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Plans Section */}
+            <Card className="border-border mb-8">
+              <CardHeader>
+                <CardTitle>Доступные тарифы</CardTitle>
+                <CardDescription>Выберите тариф для продолжения обучения</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Free Plan */}
+                  <div className={`bg-card border rounded-xl p-6 transition-all ${currentPlan === "free" ? "border-primary shadow-glow" : "border-border"}`}>
+                    <div className="mb-4">
+                      <h3 className="text-xl font-bold mb-1">Базовый</h3>
+                      <div className="flex items-baseline gap-1 mb-1">
+                        <span className="text-3xl font-bold">Бесплатно</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Для знакомства</p>
+                    </div>
+                    <ul className="space-y-2 mb-4 text-sm">
+                      <li className="flex gap-2"><span className="text-primary">✓</span>3 минуты на урок</li>
+                      <li className="flex gap-2"><span className="text-primary">✓</span>До 3 уроков в день</li>
+                      <li className="flex gap-2"><span className="text-primary">✓</span>1 репетитор</li>
+                    </ul>
+                    {currentPlan === "free" ? (
+                      <Button className="w-full" disabled>Текущий тариф</Button>
+                    ) : (
+                      <Button className="w-full" variant="outline">Выбрать</Button>
+                    )}
+                  </div>
+
+                  {/* Medium Plan */}
+                  <div className={`bg-card border rounded-xl p-6 transition-all ${currentPlan === "medium" ? "border-primary shadow-glow" : "border-border"}`}>
+                    <div className="mb-4">
+                      <h3 className="text-xl font-bold mb-1">Medium</h3>
+                      <div className="flex items-baseline gap-1 mb-1">
+                        <span className="text-3xl font-bold">13 500₽</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">500 минут (27₽/мин)</p>
+                    </div>
+                    <ul className="space-y-2 mb-4 text-sm">
+                      <li className="flex gap-2"><span className="text-primary">✓</span>Гайды и чек-листы</li>
+                      <li className="flex gap-2"><span className="text-primary">✓</span>30% репетиторов</li>
+                    </ul>
+                    {currentPlan === "medium" ? (
+                      <Button className="w-full" disabled>Текущий тариф</Button>
+                    ) : (
+                      <Button className="w-full">Купить</Button>
+                    )}
+                  </div>
+
+                  {/* Plus Plan */}
+                  <div className={`bg-card border-2 rounded-xl p-6 relative transition-all ${currentPlan === "plus" ? "border-primary shadow-glow" : "border-primary"}`}>
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-xs font-semibold">
+                      Популярный
+                    </div>
+                    <div className="mb-4">
+                      <h3 className="text-xl font-bold mb-1">Plus</h3>
+                      <div className="flex items-baseline gap-1 mb-1">
+                        <span className="text-3xl font-bold">25 000₽</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">1 200 минут (25₽/мин)</p>
+                    </div>
+                    <ul className="space-y-2 mb-4 text-sm">
+                      <li className="flex gap-2"><span className="text-primary">✓</span>Гайды, чек-листы</li>
+                      <li className="flex gap-2"><span className="text-primary">✓</span>Подборки</li>
+                      <li className="flex gap-2"><span className="text-primary">✓</span>50% репетиторов</li>
+                    </ul>
+                    {currentPlan === "plus" ? (
+                      <Button className="w-full" disabled>Текущий тариф</Button>
+                    ) : (
+                      <Button className="w-full">Купить</Button>
+                    )}
+                  </div>
+
+                  {/* Premium Plan */}
+                  <div className={`bg-card border rounded-xl p-6 transition-all ${currentPlan === "premium" ? "border-primary shadow-glow" : "border-border"}`}>
+                    <div className="mb-4">
+                      <h3 className="text-xl font-bold mb-1">Premium</h3>
+                      <div className="flex items-baseline gap-1 mb-1">
+                        <span className="text-3xl font-bold">57 500₽</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">2 500 минут (23₽/мин)</p>
+                    </div>
+                    <ul className="space-y-2 mb-4 text-sm">
+                      <li className="flex gap-2"><span className="text-primary">✓</span>Все материалы</li>
+                      <li className="flex gap-2"><span className="text-primary">✓</span>Рекомендации</li>
+                      <li className="flex gap-2"><span className="text-primary">✓</span>Все репетиторы</li>
+                    </ul>
+                    {currentPlan === "premium" ? (
+                      <Button className="w-full" disabled>Текущий тариф</Button>
+                    ) : (
+                      <Button className="w-full">Купить</Button>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Activity */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <Card className="border-border">
                 <CardHeader>
@@ -529,183 +436,13 @@ const Profile = () => {
                   </div>
                 </CardContent>
               </Card>
-
-              <Card className="border-border">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Crown className="h-5 w-5 text-primary" />
-                    Подписка
-                  </CardTitle>
-                  <CardDescription>Информация о вашем плане</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {hasSubscription ? (
-                    <div className="space-y-4">
-                      <div className="p-4 bg-gradient-primary rounded-lg shadow-glow">
-                        <p className="text-sm text-primary-foreground/80 mb-1">
-                          Текущий план
-                        </p>
-                        <p className="text-2xl font-bold text-primary-foreground">
-                          Премиум
-                        </p>
-                        <p className="text-sm text-primary-foreground/90 mt-1">
-                          1499₽/мес
-                        </p>
-                      </div>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Статус</span>
-                          <span className="font-medium text-primary">Активна</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">
-                            Дата окончания
-                          </span>
-                          <span className="font-medium">15 марта 2025</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">
-                            Автопродление
-                          </span>
-                          <span className="font-medium">Включено</span>
-                        </div>
-                      </div>
-                      <div className="space-y-4">
-                        <PromoCodeInput 
-                          onPromoApplied={(discount) => {
-                            console.log(`Discount applied: ${discount}%`);
-                          }}
-                        />
-                        <Link to="/subscription" className="w-full">
-                          <Button variant="outline" className="w-full">
-                            Управление подпиской
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <div className="p-4 bg-muted rounded-lg border border-border">
-                        <p className="text-sm text-muted-foreground mb-1">
-                          У вас нет активной подписки
-                        </p>
-                        <p className="text-2xl font-bold">
-                          Премиум
-                        </p>
-                        <p className="text-lg font-semibold text-primary mt-1">
-                          1499₽/мес
-                        </p>
-                      </div>
-                      <div className="space-y-2 text-sm">
-                        <p className="text-muted-foreground">
-                          Получите доступ ко всем функциям платформы
-                        </p>
-                      </div>
-                      <Button className="w-full">
-                        Оформить подписку
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
             </div>
-
-            {/* Tasks Card */}
-            <Card 
-              className="border-border hover:border-primary/50 transition-all hover:shadow-glow cursor-pointer mb-8"
-              onClick={() => setShowTasksDialog(true)}
-            >
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-primary" />
-                  Задания
-                </CardTitle>
-                <CardDescription>
-                  Выполняй задания и зарабатывай баллы
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-2xl font-bold">
-                      {tasks.filter(t => !getTaskStatus(t.id)?.completed_at).length}
-                    </p>
-                    <p className="text-sm text-muted-foreground">Доступно заданий</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-semibold text-primary">
-                      {tasks.filter(t => !getTaskStatus(t.id)?.completed_at)
-                        .reduce((sum, task) => sum + task.points, 0)} баллов
-                    </p>
-                    <p className="text-xs text-muted-foreground">можно заработать</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
 
             {/* Referral Program */}
             <ReferralProgram />
           </div>
         </div>
 
-            {/* Tasks Dialog */}
-            <Dialog open={showTasksDialog} onOpenChange={setShowTasksDialog}>
-              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl flex items-center gap-2">
-                    <Target className="h-6 w-6 text-primary" />
-                    Доступные задания
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="space-y-3 mt-4">
-              {tasks.map((task) => {
-                const taskStatus = getTaskStatus(task.id);
-                const isCompleted = !!taskStatus?.completed_at;
-                const isInProgress = taskStatus?.started_at && !taskStatus?.completed_at;
-                
-                return (
-                  <Card 
-                    key={task.id}
-                    className="border-border hover:border-primary/50 transition-all hover:shadow-glow"
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex-1">
-                          <p className="font-medium text-lg">{task.title}</p>
-                          {isInProgress && (
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Таймер запущен • Осталось менее 24 часов
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="text-right">
-                            <p className="text-xl font-bold text-primary">{task.points}</p>
-                            <p className="text-xs text-muted-foreground">баллов</p>
-                          </div>
-                          <Button 
-                            size="sm"
-                            className="shrink-0"
-                            disabled={isCompleted || isInProgress}
-                            style={isCompleted ? { backgroundColor: '#BDBDBD', color: '#fff', cursor: 'not-allowed' } : {}}
-                            onClick={() => handleStartTask(task.id, task.points)}
-                          >
-                            {isCompleted ? 'Выполнено' : isInProgress ? 'В процессе' : 'Начать задание'}
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-            <div className="mt-6 p-4 bg-primary/10 rounded-lg border border-primary/20">
-              <p className="text-sm text-center">
-                Выполняй задания регулярно, чтобы зарабатывать больше баллов и получать скидки!
-              </p>
-            </div>
-          </DialogContent>
-        </Dialog>
       </main>
       <Footer />
     </div>
