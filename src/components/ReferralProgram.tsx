@@ -2,14 +2,13 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Users, Copy, Check } from "lucide-react";
+import { Users, Copy } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 export const ReferralProgram = () => {
   const [referralCode, setReferralCode] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [totalPoints, setTotalPoints] = useState(0);
   const [referralsCount, setReferralsCount] = useState(0);
+  const [earnedMinutes, setEarnedMinutes] = useState(0);
   useEffect(() => {
     const loadReferralData = async () => {
       const {
@@ -23,35 +22,29 @@ export const ReferralProgram = () => {
       const code = `AISC${user.id.substring(0, 8).toUpperCase()}`;
       setReferralCode(code);
 
-      // Get user points
-      const {
-        data: pointsData
-      } = await supabase.from("user_points").select("total_points").eq("user_id", user.id).single();
-      if (pointsData) {
-        setTotalPoints(pointsData.total_points);
-      }
-
       // Get referrals count
       const {
-        data: referralsData,
         count
       } = await supabase.from("referral_program").select("*", {
         count: 'exact',
         head: true
       }).eq("referrer_user_id", user.id);
       setReferralsCount(count || 0);
+      
+      // Calculate earned minutes (3% of referral purchases converted to minutes)
+      const { data: referralsData } = await supabase
+        .from("referral_program")
+        .select("purchase_amount")
+        .eq("referrer_user_id", user.id);
+      
+      if (referralsData) {
+        const totalEarned = referralsData.reduce((sum, ref) => sum + (ref.purchase_amount || 0), 0);
+        // 3% of purchase amount converted to minutes (assuming 29₽/min)
+        setEarnedMinutes(Math.floor((totalEarned * 0.03) / 29));
+      }
     };
     loadReferralData();
   }, []);
-  const handleCopyReferralCode = () => {
-    navigator.clipboard.writeText(referralCode);
-    setCopied(true);
-    toast({
-      title: "Скопировано!",
-      description: "Реферальный код скопирован в буфер обмена"
-    });
-    setTimeout(() => setCopied(false), 2000);
-  };
   const referralLink = `${window.location.origin}/signup?ref=${referralCode}`;
   const handleCopyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -77,16 +70,8 @@ export const ReferralProgram = () => {
             <p className="text-2xl font-bold">{referralsCount}</p>
           </div>
           <div className="bg-muted/50 rounded-lg p-4">
-            <p className="text-sm text-muted-foreground mb-1">Заработано баллов</p>
-            <p className="text-2xl font-bold text-primary">{totalPoints}</p>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          
-          <div className="flex gap-2">
-            
-            
+            <p className="text-sm text-muted-foreground mb-1">Заработано минут</p>
+            <p className="text-2xl font-bold text-primary">{earnedMinutes}</p>
           </div>
         </div>
 
@@ -103,7 +88,7 @@ export const ReferralProgram = () => {
         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
           <p className="text-sm">
             💡 <strong>Как это работает:</strong> Партнёры получают 5% от суммы покупки реферала. 
-            Обычные пользователи получают 3% в виде минут для обучения!
+            Обычные пользователи получают 3% в виде бонусных минут для обучения!
           </p>
         </div>
       </CardContent>
