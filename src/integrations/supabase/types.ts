@@ -159,7 +159,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      apply_promocode: {
+        Args: { p_code: string }
+        Returns: {
+          discount_percent: number
+          error_message: string
+          success: boolean
+        }[]
+      }
+      register_referral: {
+        Args: {
+          p_purchase_amount?: number
+          p_referred_user_id: string
+          p_referrer_code: string
+        }
+        Returns: {
+          error_message: string
+          success: boolean
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
