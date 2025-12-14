@@ -290,40 +290,10 @@ const Profile = () => {
               </CardContent>
             </Card>
 
-            {/* Plans Section - Single Card */}
-            <Card className="border-border mb-8 hover:border-primary/50 transition-all cursor-pointer" onClick={() => window.location.href = '/products'}>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Доступные тарифы</span>
-                  <span className="text-sm font-normal text-primary">Посмотреть все →</span>
-                </CardTitle>
-                <CardDescription>Выберите тариф для продолжения обучения</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-4">
-                  <div className="bg-muted/50 rounded-lg px-4 py-2">
-                    <span className="text-sm font-medium">Базовый</span>
-                    <span className="text-xs text-muted-foreground ml-2">Бесплатно</span>
-                  </div>
-                  <div className="bg-muted/50 rounded-lg px-4 py-2">
-                    <span className="text-sm font-medium">Medium</span>
-                    <span className="text-xs text-muted-foreground ml-2">13 500₽</span>
-                  </div>
-                  <div className="bg-primary/20 border border-primary rounded-lg px-4 py-2">
-                    <span className="text-sm font-medium">Plus</span>
-                    <span className="text-xs text-muted-foreground ml-2">25 000₽</span>
-                  </div>
-                  <div className="bg-muted/50 rounded-lg px-4 py-2">
-                    <span className="text-sm font-medium">Premium</span>
-                    <span className="text-xs text-muted-foreground ml-2">57 500₽</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Recent Activity */}
+            {/* Recent Activity & Plans Grid */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <Card className="border-border">
+              {/* Recent Activity */}
+              <Card className="border-border h-full">
                 <CardHeader>
                   <CardTitle>Недавняя активность</CardTitle>
                   <CardDescription>Ваши последние занятия</CardDescription>
@@ -367,6 +337,37 @@ const Profile = () => {
                         </div>
                       </div>
                     ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Plans Section - Single Card */}
+              <Card className="border-border h-full hover:border-primary/50 transition-all cursor-pointer" onClick={() => window.location.href = '/products'}>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Доступные тарифы</span>
+                    <span className="text-sm font-normal text-primary">Посмотреть все →</span>
+                  </CardTitle>
+                  <CardDescription>Выберите тариф для продолжения обучения</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-4">
+                    <div className="bg-muted/50 rounded-lg px-4 py-2">
+                      <span className="text-sm font-medium">Базовый</span>
+                      <span className="text-xs text-muted-foreground ml-2">Бесплатно</span>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg px-4 py-2">
+                      <span className="text-sm font-medium">Medium</span>
+                      <span className="text-xs text-muted-foreground ml-2">13 500₽</span>
+                    </div>
+                    <div className="bg-primary/20 border border-primary rounded-lg px-4 py-2">
+                      <span className="text-sm font-medium">Plus</span>
+                      <span className="text-xs text-muted-foreground ml-2">25 000₽</span>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg px-4 py-2">
+                      <span className="text-sm font-medium">Premium</span>
+                      <span className="text-xs text-muted-foreground ml-2">57 500₽</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
