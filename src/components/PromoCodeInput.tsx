@@ -12,6 +12,7 @@ export const PromoCodeInput = ({ onPromoApplied }: PromoCodeInputProps) => {
   const [promoCode, setPromoCode] = useState("");
   const [isApplied, setIsApplied] = useState(false);
   const [discount, setDiscount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleApplyPromo = async () => {
     if (!promoCode.trim()) {
@@ -23,51 +24,40 @@ export const PromoCodeInput = ({ onPromoApplied }: PromoCodeInputProps) => {
       return;
     }
 
+    setIsLoading(true);
+
     try {
-      // Check if promocode exists and is active
-      const { data: promo, error } = await supabase
-        .from("promocodes")
-        .select("*")
-        .eq("code", promoCode.toUpperCase())
-        .eq("active", true)
-        .single();
+      // Use secure server-side function for promo code validation and application
+      const { data, error } = await supabase
+        .rpc('apply_promocode', { p_code: promoCode.toUpperCase() });
 
-      if (error || !promo) {
+      if (error) {
         toast({
           title: "Ошибка",
-          description: "Промокод не найден или неактивен",
+          description: "Не удалось применить промокод",
           variant: "destructive",
         });
         return;
       }
 
-      // Check if promocode is expired
-      if (promo.expires_at && new Date(promo.expires_at) < new Date()) {
+      const result = data?.[0];
+      
+      if (!result?.success) {
         toast({
           title: "Ошибка",
-          description: "Срок действия промокода истёк",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Check usage limit
-      if (promo.max_uses && promo.current_uses >= promo.max_uses) {
-        toast({
-          title: "Ошибка",
-          description: "Промокод уже использован максимальное количество раз",
+          description: result?.error_message || "Промокод не найден или неактивен",
           variant: "destructive",
         });
         return;
       }
 
       setIsApplied(true);
-      setDiscount(promo.discount_percent);
-      onPromoApplied?.(promo.discount_percent);
+      setDiscount(result.discount_percent);
+      onPromoApplied?.(result.discount_percent);
       
       toast({
         title: "Успешно!",
-        description: `Промокод применён. Скидка ${promo.discount_percent}%`,
+        description: `Промокод применён. Скидка ${result.discount_percent}%`,
       });
     } catch (error) {
       toast({
@@ -75,6 +65,8 @@ export const PromoCodeInput = ({ onPromoApplied }: PromoCodeInputProps) => {
         description: "Не удалось применить промокод",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -85,15 +77,15 @@ export const PromoCodeInput = ({ onPromoApplied }: PromoCodeInputProps) => {
           placeholder="Введите промокод"
           value={promoCode}
           onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-          disabled={isApplied}
+          disabled={isApplied || isLoading}
           className="flex-1"
         />
         <Button 
           onClick={handleApplyPromo} 
-          disabled={isApplied}
+          disabled={isApplied || isLoading}
           variant={isApplied ? "outline" : "default"}
         >
-          {isApplied ? "Применён" : "Применить"}
+          {isLoading ? "Проверка..." : isApplied ? "Применён" : "Применить"}
         </Button>
       </div>
       {isApplied && (
