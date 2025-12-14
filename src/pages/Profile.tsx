@@ -240,8 +240,8 @@ const Profile = () => {
                     <p className="text-xs text-muted-foreground mb-2">
                       Пошаговые списки для эффективного обучения
                     </p>
-                    <p className="text-sm font-medium text-primary">
-                      {currentPlan === "free" ? "Недоступно" : "5 доступно"}
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Недоступно
                     </p>
                   </div>
 
@@ -254,8 +254,8 @@ const Profile = () => {
                     <p className="text-xs text-muted-foreground mb-2">
                       Подробные руководства по темам
                     </p>
-                    <p className="text-sm font-medium text-primary">
-                      {currentPlan === "free" ? "Недоступно" : "8 доступно"}
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Недоступно
                     </p>
                   </div>
 
@@ -268,8 +268,8 @@ const Profile = () => {
                     <p className="text-xs text-muted-foreground mb-2">
                       Кураторские подборки материалов
                     </p>
-                    <p className="text-sm font-medium text-primary">
-                      {currentPlan === "plus" || currentPlan === "premium" ? "12 доступно" : "Недоступно"}
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Недоступно
                     </p>
                   </div>
 
@@ -282,106 +282,40 @@ const Profile = () => {
                     <p className="text-xs text-muted-foreground mb-2">
                       Персональные советы по обучению
                     </p>
-                    <p className="text-sm font-medium text-primary">
-                      {currentPlan === "premium" ? "3 новых" : "Недоступно"}
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Недоступно
                     </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Plans Section */}
-            <Card className="border-border mb-8">
+            {/* Plans Section - Single Card */}
+            <Card className="border-border mb-8 hover:border-primary/50 transition-all cursor-pointer" onClick={() => window.location.href = '/products'}>
               <CardHeader>
-                <CardTitle>Доступные тарифы</CardTitle>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Доступные тарифы</span>
+                  <span className="text-sm font-normal text-primary">Посмотреть все →</span>
+                </CardTitle>
                 <CardDescription>Выберите тариф для продолжения обучения</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {/* Free Plan */}
-                  <div className={`bg-card border rounded-xl p-6 transition-all ${currentPlan === "free" ? "border-primary shadow-glow" : "border-border"}`}>
-                    <div className="mb-4">
-                      <h3 className="text-xl font-bold mb-1">Базовый</h3>
-                      <div className="flex items-baseline gap-1 mb-1">
-                        <span className="text-3xl font-bold">Бесплатно</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">Для знакомства</p>
-                    </div>
-                    <ul className="space-y-2 mb-4 text-sm">
-                      <li className="flex gap-2"><span className="text-primary">✓</span>3 минуты на урок</li>
-                      <li className="flex gap-2"><span className="text-primary">✓</span>До 3 уроков в день</li>
-                      <li className="flex gap-2"><span className="text-primary">✓</span>1 репетитор</li>
-                    </ul>
-                    {currentPlan === "free" ? (
-                      <Button className="w-full" disabled>Текущий тариф</Button>
-                    ) : (
-                      <Button className="w-full" variant="outline">Выбрать</Button>
-                    )}
+                <div className="flex flex-wrap gap-4">
+                  <div className="bg-muted/50 rounded-lg px-4 py-2">
+                    <span className="text-sm font-medium">Базовый</span>
+                    <span className="text-xs text-muted-foreground ml-2">Бесплатно</span>
                   </div>
-
-                  {/* Medium Plan */}
-                  <div className={`bg-card border rounded-xl p-6 transition-all ${currentPlan === "medium" ? "border-primary shadow-glow" : "border-border"}`}>
-                    <div className="mb-4">
-                      <h3 className="text-xl font-bold mb-1">Medium</h3>
-                      <div className="flex items-baseline gap-1 mb-1">
-                        <span className="text-3xl font-bold">13 500₽</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">500 минут (27₽/мин)</p>
-                    </div>
-                    <ul className="space-y-2 mb-4 text-sm">
-                      <li className="flex gap-2"><span className="text-primary">✓</span>Гайды и чек-листы</li>
-                      <li className="flex gap-2"><span className="text-primary">✓</span>30% репетиторов</li>
-                    </ul>
-                    {currentPlan === "medium" ? (
-                      <Button className="w-full" disabled>Текущий тариф</Button>
-                    ) : (
-                      <Button className="w-full">Купить</Button>
-                    )}
+                  <div className="bg-muted/50 rounded-lg px-4 py-2">
+                    <span className="text-sm font-medium">Medium</span>
+                    <span className="text-xs text-muted-foreground ml-2">13 500₽</span>
                   </div>
-
-                  {/* Plus Plan */}
-                  <div className={`bg-card border-2 rounded-xl p-6 relative transition-all ${currentPlan === "plus" ? "border-primary shadow-glow" : "border-primary"}`}>
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-xs font-semibold">
-                      Популярный
-                    </div>
-                    <div className="mb-4">
-                      <h3 className="text-xl font-bold mb-1">Plus</h3>
-                      <div className="flex items-baseline gap-1 mb-1">
-                        <span className="text-3xl font-bold">25 000₽</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">1 200 минут (25₽/мин)</p>
-                    </div>
-                    <ul className="space-y-2 mb-4 text-sm">
-                      <li className="flex gap-2"><span className="text-primary">✓</span>Гайды, чек-листы</li>
-                      <li className="flex gap-2"><span className="text-primary">✓</span>Подборки</li>
-                      <li className="flex gap-2"><span className="text-primary">✓</span>50% репетиторов</li>
-                    </ul>
-                    {currentPlan === "plus" ? (
-                      <Button className="w-full" disabled>Текущий тариф</Button>
-                    ) : (
-                      <Button className="w-full">Купить</Button>
-                    )}
+                  <div className="bg-primary/20 border border-primary rounded-lg px-4 py-2">
+                    <span className="text-sm font-medium">Plus</span>
+                    <span className="text-xs text-muted-foreground ml-2">25 000₽</span>
                   </div>
-
-                  {/* Premium Plan */}
-                  <div className={`bg-card border rounded-xl p-6 transition-all ${currentPlan === "premium" ? "border-primary shadow-glow" : "border-border"}`}>
-                    <div className="mb-4">
-                      <h3 className="text-xl font-bold mb-1">Premium</h3>
-                      <div className="flex items-baseline gap-1 mb-1">
-                        <span className="text-3xl font-bold">57 500₽</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">2 500 минут (23₽/мин)</p>
-                    </div>
-                    <ul className="space-y-2 mb-4 text-sm">
-                      <li className="flex gap-2"><span className="text-primary">✓</span>Все материалы</li>
-                      <li className="flex gap-2"><span className="text-primary">✓</span>Рекомендации</li>
-                      <li className="flex gap-2"><span className="text-primary">✓</span>Все репетиторы</li>
-                    </ul>
-                    {currentPlan === "premium" ? (
-                      <Button className="w-full" disabled>Текущий тариф</Button>
-                    ) : (
-                      <Button className="w-full">Купить</Button>
-                    )}
+                  <div className="bg-muted/50 rounded-lg px-4 py-2">
+                    <span className="text-sm font-medium">Premium</span>
+                    <span className="text-xs text-muted-foreground ml-2">57 500₽</span>
                   </div>
                 </div>
               </CardContent>
