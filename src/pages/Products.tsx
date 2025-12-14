@@ -83,7 +83,7 @@ const Products = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-8">
             {/* Free Plan */}
-            <div className="bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all">
+            <div className="bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all flex flex-col">
               <div className="mb-6">
                 <h3 className="text-2xl font-bold mb-2">Базовый</h3>
                 <div className="flex items-baseline gap-2 mb-2">
@@ -91,7 +91,7 @@ const Products = () => {
                 </div>
                 <p className="text-sm text-muted-foreground">Идеально для знакомства</p>
               </div>
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-3 mb-8 flex-1">
                 <li className="flex items-start gap-2 text-sm">
                   <span className="text-primary">✓</span>
                   <span>3 минуты на урок</span>
@@ -105,11 +105,11 @@ const Products = () => {
                   <span>Доступ к одному репетитору</span>
                 </li>
               </ul>
-              <Button className="w-full" variant="outline">Начать</Button>
+              <Button className="w-full mt-auto" variant="outline">Выбрать</Button>
             </div>
 
             {/* Medium Plan */}
-            <div className="bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all">
+            <div className="bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all flex flex-col">
               <div className="mb-6">
                 <h3 className="text-2xl font-bold mb-2">Medium</h3>
                 <div className="flex items-baseline gap-2 mb-2">
@@ -117,7 +117,7 @@ const Products = () => {
                 </div>
                 <p className="text-sm text-muted-foreground mb-1">500 минут (27₽/мин)</p>
               </div>
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-3 mb-8 flex-1">
                 <li className="flex items-start gap-2 text-sm">
                   <span className="text-primary">✓</span>
                   <span>Гайды и чек-листы</span>
@@ -127,11 +127,11 @@ const Products = () => {
                   <span>Доступ к 30% репетиторов</span>
                 </li>
               </ul>
-              <Button className="w-full">Выбрать</Button>
+              <Button className="w-full mt-auto">Выбрать</Button>
             </div>
 
             {/* Plus Plan - Most Popular */}
-            <div className="bg-card border-2 border-primary rounded-2xl p-8 relative shadow-glow">
+            <div className="bg-card border-2 border-primary rounded-2xl p-8 relative shadow-glow flex flex-col">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">
                 Выбирают чаще всего
               </div>
@@ -142,7 +142,7 @@ const Products = () => {
                 </div>
                 <p className="text-sm text-muted-foreground mb-1">1 200 минут (25₽/мин)</p>
               </div>
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-3 mb-8 flex-1">
                 <li className="flex items-start gap-2 text-sm">
                   <span className="text-primary">✓</span>
                   <span>Гайды и чек-листы</span>
@@ -160,11 +160,11 @@ const Products = () => {
                   <span>Доступ к 50% репетиторов</span>
                 </li>
               </ul>
-              <Button className="w-full" variant="hero">Выбрать</Button>
+              <Button className="w-full mt-auto" variant="hero">Выбрать</Button>
             </div>
 
             {/* Premium Plan */}
-            <div className="bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all">
+            <div className="bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all flex flex-col">
               <div className="mb-6">
                 <h3 className="text-2xl font-bold mb-2">Premium</h3>
                 <div className="flex items-baseline gap-2 mb-2">
@@ -172,7 +172,7 @@ const Products = () => {
                 </div>
                 <p className="text-sm text-muted-foreground mb-1">2 500 минут (23₽/мин)</p>
               </div>
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-3 mb-8 flex-1">
                 <li className="flex items-start gap-2 text-sm">
                   <span className="text-primary">✓</span>
                   <span>Гайды и чек-листы</span>
@@ -194,7 +194,7 @@ const Products = () => {
                   <span>Полный доступ ко всем репетиторам</span>
                 </li>
               </ul>
-              <Button className="w-full">Выбрать</Button>
+              <Button className="w-full mt-auto">Выбрать</Button>
             </div>
           </div>
 

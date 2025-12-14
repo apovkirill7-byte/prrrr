@@ -16,7 +16,7 @@ export const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/products" className="text-muted-foreground hover:text-primary transition-colors">
-                  Подписка Плюс
+                  Тарифы и минуты
                 </Link>
               </li>
             </ul>
