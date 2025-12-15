@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { TutorCard } from "@/components/TutorCard";
 
 const Sales = () => {
   return (
@@ -15,13 +16,14 @@ const Sales = () => {
             </p>
           </div>
 
-          {/* Здесь будут карточки товаров */}
-          <div className="max-w-6xl mx-auto">
-            <div className="bg-card border border-border rounded-2xl p-12 text-center">
-              <p className="text-muted-foreground">
-                Карточки товаров будут добавлены позже
-              </p>
-            </div>
+          <div className="max-w-4xl mx-auto">
+            <TutorCard 
+              name="Алексей Продавцов"
+              profession="Sales-эксперт"
+              specialization="Эксперт по B2B и B2C продажам"
+              description="Более 15 лет опыта в продажах. Обучу вас техникам холодных звонков, работе с возражениями, закрытию сделок и построению долгосрочных отношений с клиентами. Специализируюсь на корпоративных продажах и работе с крупными клиентами."
+              imageUrl="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop"
+            />
           </div>
         </section>
       </main>

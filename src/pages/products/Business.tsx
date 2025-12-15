@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { TutorCard } from "@/components/TutorCard";
 
 const Business = () => {
   return (
@@ -15,13 +16,14 @@ const Business = () => {
             </p>
           </div>
 
-          {/* Здесь будут карточки товаров */}
-          <div className="max-w-6xl mx-auto">
-            <div className="bg-card border border-border rounded-2xl p-12 text-center">
-              <p className="text-muted-foreground">
-                Карточки товаров будут добавлены позже
-              </p>
-            </div>
+          <div className="max-w-4xl mx-auto">
+            <TutorCard 
+              name="Дмитрий Предпринимателев"
+              profession="Бизнес-консультант"
+              specialization="Стратегическое планирование и масштабирование"
+              description="Серийный предприниматель с опытом запуска более 10 успешных проектов. Помогу разобраться в финансовом планировании, управлении командой, построении бизнес-процессов и привлечении инвестиций."
+              imageUrl="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop"
+            />
           </div>
         </section>
       </main>

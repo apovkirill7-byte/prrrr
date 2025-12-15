@@ -6,7 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ReferralProgram } from "@/components/ReferralProgram";
-import { Flame, Clock, Trophy, LogOut } from "lucide-react";
+import { MinutesBalance } from "@/components/MinutesBalance";
+import { PromoCodeCard } from "@/components/PromoCodeCard";
+import { LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
@@ -143,8 +145,10 @@ const Profile = () => {
               </Button>
             </div>
 
-            {/* Stats Grid */}
-            
+            {/* Minutes Balance */}
+            <div className="mb-8">
+              <MinutesBalance />
+            </div>
 
             {/* Resources Section - Checklists, Guides, Collections, Recommendations */}
             <Card className="border-border mb-8">
@@ -213,12 +217,9 @@ const Profile = () => {
               </CardContent>
             </Card>
 
-            {/* Recent Activity & Plans Grid */}
+            {/* Plans & Promo Grid */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
-              {/* Recent Activity */}
-              
-
-              {/* Plans Section - Single Card */}
+              {/* Plans Section */}
               <Card className="border-border h-full hover:border-primary/50 transition-all cursor-pointer" onClick={() => window.location.href = '/products'}>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
@@ -248,6 +249,9 @@ const Profile = () => {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Promo Code Card */}
+              <PromoCodeCard />
             </div>
 
             {/* Referral Program */}

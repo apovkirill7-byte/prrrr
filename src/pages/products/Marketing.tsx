@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { TutorCard } from "@/components/TutorCard";
 
 const Marketing = () => {
   return (
@@ -15,13 +16,14 @@ const Marketing = () => {
             </p>
           </div>
 
-          {/* Здесь будут карточки товаров */}
-          <div className="max-w-6xl mx-auto">
-            <div className="bg-card border border-border rounded-2xl p-12 text-center">
-              <p className="text-muted-foreground">
-                Карточки товаров будут добавлены позже
-              </p>
-            </div>
+          <div className="max-w-4xl mx-auto">
+            <TutorCard 
+              name="Мария Маркетова"
+              profession="Маркетолог"
+              specialization="Digital-маркетинг и стратегии роста"
+              description="Эксперт в области цифрового маркетинга с опытом работы в ведущих компаниях. Научу вас создавать эффективные маркетинговые стратегии, настраивать рекламные кампании, анализировать метрики и увеличивать конверсию."
+              imageUrl="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop"
+            />
           </div>
         </section>
       </main>
