@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { TutorCard } from "@/components/TutorCard";
 
 const Languages = () => {
   return (
@@ -15,13 +16,14 @@ const Languages = () => {
             </p>
           </div>
 
-          {/* Здесь будут карточки товаров */}
-          <div className="max-w-6xl mx-auto">
-            <div className="bg-card border border-border rounded-2xl p-12 text-center">
-              <p className="text-muted-foreground">
-                Карточки товаров будут добавлены позже
-              </p>
-            </div>
+          <div className="max-w-4xl mx-auto">
+            <TutorCard 
+              name="Анна Лингвистова"
+              profession="Лингвист-переводчик"
+              specialization="Английский, немецкий и французский языки"
+              description="Профессиональный преподаватель с международными сертификатами CELTA и DELTA. Использую коммуникативную методику для быстрого достижения результатов. Помогу преодолеть языковой барьер и заговорить свободно."
+              imageUrl="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop"
+            />
           </div>
         </section>
       </main>
