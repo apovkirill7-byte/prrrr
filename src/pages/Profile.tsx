@@ -10,14 +10,12 @@ import { Flame, Clock, Trophy, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
-
 const Profile = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginData, setLoginData] = useState({
     email: "",
-    password: "",
+    password: ""
   });
-
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showTermsDialog, setShowTermsDialog] = useState(false);
   const [currentPlan] = useState("free"); // free, medium, plus, premium
@@ -28,28 +26,25 @@ const Profile = () => {
       toast({
         title: "Требуется согласие",
         description: "Пожалуйста, согласитесь с договором оферты и пользовательским соглашением.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
     setIsLoggedIn(true);
     toast({
       title: "Добро пожаловать!",
-      description: "Вы успешно вошли в систему.",
+      description: "Вы успешно вошли в систему."
     });
   };
-
   const handleLogout = () => {
     setIsLoggedIn(false);
     toast({
       title: "Выход выполнен",
-      description: "До скорой встречи!",
+      description: "До скорой встречи!"
     });
   };
-
   if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen">
+    return <div className="min-h-screen">
         <Header />
         <main className="pt-32 pb-20">
           <div className="container mx-auto px-4">
@@ -60,47 +55,26 @@ const Profile = () => {
                 </h1>
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div>
-                    <Input
-                      type="email"
-                      placeholder="Email"
-                      value={loginData.email}
-                      onChange={(e) =>
-                        setLoginData({ ...loginData, email: e.target.value })
-                      }
-                      required
-                    />
+                    <Input type="email" placeholder="Email" value={loginData.email} onChange={e => setLoginData({
+                    ...loginData,
+                    email: e.target.value
+                  })} required />
                   </div>
                   <div>
-                    <Input
-                      type="password"
-                      placeholder="Пароль"
-                      value={loginData.password}
-                      onChange={(e) =>
-                        setLoginData({ ...loginData, password: e.target.value })
-                      }
-                      required
-                    />
+                    <Input type="password" placeholder="Пароль" value={loginData.password} onChange={e => setLoginData({
+                    ...loginData,
+                    password: e.target.value
+                  })} required />
                   </div>
                   
                   <div className="flex items-start gap-3">
-                    <Checkbox
-                      id="terms"
-                      checked={agreedToTerms}
-                      onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
-                    />
-                    <label
-                      htmlFor="terms"
-                      className="text-sm text-muted-foreground leading-tight cursor-pointer"
-                    >
+                    <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={checked => setAgreedToTerms(checked as boolean)} />
+                    <label htmlFor="terms" className="text-sm text-muted-foreground leading-tight cursor-pointer">
                       Я согласен с{" "}
-                      <button
-                        type="button"
-                        className="text-primary hover:underline"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setShowTermsDialog(true);
-                        }}
-                      >
+                      <button type="button" className="text-primary hover:underline" onClick={e => {
+                      e.preventDefault();
+                      setShowTermsDialog(true);
+                    }}>
                         договором оферты и пользовательским соглашением
                       </button>
                     </label>
@@ -149,12 +123,9 @@ const Profile = () => {
           </div>
         </main>
         <Footer />
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       <Header />
       <main className="pt-32 pb-20">
         <div className="container mx-auto px-4">
@@ -173,55 +144,7 @@ const Profile = () => {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Card className="border-border hover:border-primary/50 transition-all hover:shadow-glow h-full">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                    <Flame className="h-4 w-4 text-primary" />
-                    Стрик
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">7 дней</div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Продолжайте в том же духе!
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-border hover:border-primary/50 transition-all hover:shadow-glow h-full">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-primary" />
-                    Часов обучения
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">42 ч</div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    В этом месяце
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card 
-                className="border-border hover:border-primary/50 transition-all hover:shadow-glow cursor-pointer h-full"
-                onClick={() => window.location.href = '/achievements'}
-              >
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                    <Trophy className="h-4 w-4 text-primary" />
-                    Достижения
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">12</div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Получено наград
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+            
 
             {/* Resources Section - Checklists, Guides, Collections, Recommendations */}
             <Card className="border-border mb-8">
@@ -293,53 +216,7 @@ const Profile = () => {
             {/* Recent Activity & Plans Grid */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               {/* Recent Activity */}
-              <Card className="border-border h-full">
-                <CardHeader>
-                  <CardTitle>Недавняя активность</CardTitle>
-                  <CardDescription>Ваши последние занятия</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[
-                      {
-                        subject: "Программирование",
-                        tutor: "Python Мастер",
-                        time: "2 часа назад",
-                      },
-                      {
-                        subject: "Английский язык",
-                        tutor: "Grammar Pro",
-                        time: "Вчера",
-                      },
-                      {
-                        subject: "Дизайн",
-                        tutor: "UI/UX Expert",
-                        time: "2 дня назад",
-                      },
-                    ].map((activity, index) => (
-                      <div
-                        key={index}
-                        className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
-                      >
-                        <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center shadow-glow shrink-0">
-                          <span className="text-sm font-semibold text-primary-foreground">
-                            {activity.subject[0]}
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{activity.subject}</p>
-                          <p className="text-sm text-muted-foreground truncate">
-                            {activity.tutor}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {activity.time}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              
 
               {/* Plans Section - Single Card */}
               <Card className="border-border h-full hover:border-primary/50 transition-all cursor-pointer" onClick={() => window.location.href = '/products'}>
@@ -380,8 +257,6 @@ const Profile = () => {
 
       </main>
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Profile;
