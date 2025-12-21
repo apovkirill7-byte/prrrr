@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Sparkles } from "lucide-react";
+import { Play, Sparkles, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface TutorCardProps {
   name: string;
@@ -12,6 +15,43 @@ interface TutorCardProps {
 }
 
 export const TutorCard = ({ name, profession, description, imageUrl, specialization }: TutorCardProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const startLesson = async () => {
+    setIsLoading(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('tavus-conversation', {
+        body: { tutorName: name }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data?.conversation_url) {
+        // Open Tavus video call in new tab
+        window.open(data.conversation_url, '_blank');
+        toast({
+          title: "Занятие начинается",
+          description: `Открывается видеозвонок с ${name}`,
+        });
+      } else {
+        throw new Error("Не удалось получить ссылку на занятие");
+      }
+    } catch (error) {
+      console.error("Error starting lesson:", error);
+      toast({
+        title: "Ошибка",
+        description: error instanceof Error ? error.message : "Не удалось начать занятие",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card className="border-border overflow-hidden hover:border-primary/50 transition-all">
       <CardContent className="p-0">
@@ -48,9 +88,13 @@ export const TutorCard = ({ name, profession, description, imageUrl, specializat
             </div>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Button className="gap-2">
-                <Play className="h-4 w-4" />
-                Заниматься
+              <Button className="gap-2" onClick={startLesson} disabled={isLoading}>
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Play className="h-4 w-4" />
+                )}
+                {isLoading ? "Подключение..." : "Заниматься"}
               </Button>
               <Button variant="outline" className="gap-2 border-secondary/50 text-secondary hover:bg-secondary/10">
                 <Sparkles className="h-4 w-4" />
