@@ -1,1 +1,7 @@
 project_id = "nrctjjxrrlzocyotzvms"
+
+[functions.chat-support]
+verify_jwt = false
+
+[functions.tavus-conversation]
+verify_jwt = false
