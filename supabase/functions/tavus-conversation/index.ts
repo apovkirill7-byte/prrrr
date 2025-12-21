@@ -6,11 +6,9 @@ const corsHeaders = {
 };
 
 const TAVUS_BASE_URL = "https://tavusapi.com/v2";
-const PERSONA_ID = "pcf2b035d832";
 const REPLICA_ID = "r62baeccd777";
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -30,8 +28,42 @@ serve(async (req) => {
     
     console.log("Creating Tavus conversation for tutor:", tutorName);
 
-    const body = {
-      persona_id: PERSONA_ID,
+    const headers = {
+      'Content-Type': 'application/json',
+      'x-api-key': TAVUS_API_KEY
+    };
+
+    // Step 1: Create a persona for this tutor
+    console.log("Creating persona...");
+    const personaBody = {
+      persona_name: `Tutor ${tutorName}`,
+      pipeline_mode: "full",
+      system_prompt: `Ты ${tutorName}, опытный преподаватель. Веди занятие на русском языке. Будь дружелюбным, терпеливым и профессиональным. Помогай ученику освоить материал, задавай вопросы для проверки понимания.`
+    };
+
+    const personaResponse = await fetch(`${TAVUS_BASE_URL}/personas`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(personaBody)
+    });
+
+    const personaData = await personaResponse.json();
+    console.log("Persona response:", JSON.stringify(personaData));
+
+    if (!personaResponse.ok) {
+      console.error("Failed to create persona:", personaData);
+      return new Response(
+        JSON.stringify({ error: personaData.message || "Failed to create persona" }),
+        { status: personaResponse.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const personaId = personaData.persona_id;
+    console.log("Created persona with ID:", personaId);
+
+    // Step 2: Create conversation with the new persona
+    const conversationBody = {
+      persona_id: personaId,
       replica_id: REPLICA_ID,
       test_mode: false,
       conversation_name: `Занятие с ${tutorName || 'репетитором'}`,
@@ -40,20 +72,16 @@ serve(async (req) => {
       }
     };
 
-    console.log("Request body:", JSON.stringify(body));
+    console.log("Creating conversation:", JSON.stringify(conversationBody));
 
     const response = await fetch(`${TAVUS_BASE_URL}/conversations`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': TAVUS_API_KEY
-      },
-      body: JSON.stringify(body)
+      headers,
+      body: JSON.stringify(conversationBody)
     });
 
     const data = await response.json();
-    
-    console.log("Tavus API response:", JSON.stringify(data));
+    console.log("Tavus conversation response:", JSON.stringify(data));
 
     if (!response.ok) {
       console.error("Tavus API error:", data);
