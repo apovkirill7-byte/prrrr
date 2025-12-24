@@ -13,6 +13,10 @@ interface HistoryItem {
   type: "add" | "spend";
 }
 
+interface MinutesBalanceProps {
+  balance?: number;
+}
+
 const mockHistory: HistoryItem[] = [
   { id: "1", date: "14.12.2024", description: "Урок с репетитором по продажам", minutes: -15, type: "spend" },
   { id: "2", date: "13.12.2024", description: "Пополнение баланса (Plus)", minutes: 1200, type: "add" },
@@ -21,9 +25,9 @@ const mockHistory: HistoryItem[] = [
   { id: "5", date: "10.12.2024", description: "Урок с репетитором по английскому", minutes: -20, type: "spend" },
 ];
 
-export const MinutesBalance = () => {
+export const MinutesBalance = ({ balance = 0 }: MinutesBalanceProps) => {
   const [showHistory, setShowHistory] = useState(false);
-  const currentBalance = 1180; // Заглушка - потом подключить к БД
+  const currentBalance = balance;
 
   return (
     <>

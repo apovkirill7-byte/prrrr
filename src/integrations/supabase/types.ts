@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_banned: boolean | null
+          last_online_at: string | null
+          name: string
+          referral_code: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_banned?: boolean | null
+          last_online_at?: string | null
+          name: string
+          referral_code?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_banned?: boolean | null
+          last_online_at?: string | null
+          name?: string
+          referral_code?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       promocodes: {
         Row: {
           active: boolean | null
@@ -74,6 +110,72 @@ export type Database = {
         }
         Relationships: []
       }
+      user_materials: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          is_unlocked: boolean | null
+          material_type: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_unlocked?: boolean | null
+          material_type: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_unlocked?: boolean | null
+          material_type?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_metrics: {
+        Row: {
+          created_at: string
+          current_plan: string | null
+          id: string
+          minutes_balance: number | null
+          referral_earnings: number | null
+          total_spent: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_plan?: string | null
+          id?: string
+          minutes_balance?: number | null
+          referral_earnings?: number | null
+          total_spent?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_plan?: string | null
+          id?: string
+          minutes_balance?: number | null
+          referral_earnings?: number | null
+          total_spent?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_points: {
         Row: {
           id: string
@@ -123,6 +225,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_sessions: {
+        Row: {
+          created_at: string
+          device_info: string | null
+          expires_at: string
+          id: string
+          ip_address: string | null
+          is_revoked: boolean | null
+          last_active_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_info?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: string | null
+          is_revoked?: boolean | null
+          last_active_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_info?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: string | null
+          is_revoked?: boolean | null
+          last_active_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_tasks: {
         Row: {

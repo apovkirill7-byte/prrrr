@@ -1,133 +1,68 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ReferralProgram } from "@/components/ReferralProgram";
 import { MinutesBalance } from "@/components/MinutesBalance";
 import { PromoCodeCard } from "@/components/PromoCodeCard";
-import { LogOut } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { LogOut, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
-const Profile = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loginData, setLoginData] = useState({
-    email: "",
-    password: ""
-  });
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [showTermsDialog, setShowTermsDialog] = useState(false);
-  const [currentPlan] = useState("free"); // free, medium, plus, premium
+import { useAuth } from "@/hooks/useAuth";
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!agreedToTerms) {
-      toast({
-        title: "Требуется согласие",
-        description: "Пожалуйста, согласитесь с договором оферты и пользовательским соглашением.",
-        variant: "destructive"
-      });
-      return;
+const Profile = () => {
+  const navigate = useNavigate();
+  const { user, profile, metrics, materials, loading, signOut } = useAuth();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
     }
-    setIsLoggedIn(true);
-    toast({
-      title: "Добро пожаловать!",
-      description: "Вы успешно вошли в систему."
-    });
-  };
-  const handleLogout = () => {
-    setIsLoggedIn(false);
+  }, [loading, user, navigate]);
+
+  const handleLogout = async () => {
+    await signOut();
     toast({
       title: "Выход выполнен",
       description: "До скорой встречи!"
     });
+    navigate("/auth");
   };
-  if (!isLoggedIn) {
-    return <div className="min-h-screen">
-        <Header />
-        <main className="pt-32 pb-20">
-          <div className="container mx-auto px-4">
-            <div className="max-w-md mx-auto">
-              <div className="bg-card border border-border rounded-2xl p-8">
-                <h1 className="text-3xl font-bold mb-6 text-center">
-                  Вход в систему
-                </h1>
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div>
-                    <Input type="email" placeholder="Email" value={loginData.email} onChange={e => setLoginData({
-                    ...loginData,
-                    email: e.target.value
-                  })} required />
-                  </div>
-                  <div>
-                    <Input type="password" placeholder="Пароль" value={loginData.password} onChange={e => setLoginData({
-                    ...loginData,
-                    password: e.target.value
-                  })} required />
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={checked => setAgreedToTerms(checked as boolean)} />
-                    <label htmlFor="terms" className="text-sm text-muted-foreground leading-tight cursor-pointer">
-                      Я согласен с{" "}
-                      <button type="button" className="text-primary hover:underline" onClick={e => {
-                      e.preventDefault();
-                      setShowTermsDialog(true);
-                    }}>
-                        договором оферты и пользовательским соглашением
-                      </button>
-                    </label>
-                  </div>
-                  
-                  <Button type="submit" className="w-full" disabled={!agreedToTerms}>
-                    Войти
-                  </Button>
-                  <p className="text-center text-sm text-muted-foreground">
-                    Нет аккаунта?{" "}
-                    <Link to="/auth" className="text-primary hover:underline">
-                      Зарегистрироваться
-                    </Link>
-                  </p>
-                </form>
-                
-                <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
-                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Договор оферты и пользовательское соглашение</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="font-semibold mb-2">Договор оферты</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Текст договора оферты будет добавлен позже.
-                        </p>
-                        <Link to="/offer" className="text-sm text-primary hover:underline">
-                          Читать полностью
-                        </Link>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold mb-2">Пользовательское соглашение</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Текст пользовательского соглашения будет добавлен позже.
-                        </p>
-                        <Link to="/terms" className="text-sm text-primary hover:underline">
-                          Читать полностью
-                        </Link>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
-  return <div className="min-h-screen">
+
+  if (!user) {
+    return null;
+  }
+
+  const userName = profile?.name || user.user_metadata?.name || "Пользователь";
+  const currentPlan = metrics?.current_plan || "free";
+  const minutesBalance = metrics?.minutes_balance || 0;
+
+  // Count materials by type
+  const checklistsCount = materials.filter(m => m.material_type === 'checklist' && m.is_unlocked).length;
+  const guidesCount = materials.filter(m => m.material_type === 'guide' && m.is_unlocked).length;
+  const collectionsCount = materials.filter(m => m.material_type === 'collection' && m.is_unlocked).length;
+  const recommendationsCount = materials.filter(m => m.material_type === 'recommendation' && m.is_unlocked).length;
+
+  const getPlanLabel = (plan: string) => {
+    switch (plan) {
+      case 'medium': return 'Medium';
+      case 'plus': return 'Plus';
+      case 'premium': return 'Premium';
+      default: return 'Базовый';
+    }
+  };
+
+  return (
+    <div className="min-h-screen">
       <Header />
       <main className="pt-32 pb-20">
         <div className="container mx-auto px-4">
@@ -136,7 +71,10 @@ const Profile = () => {
               <div>
                 <h1 className="text-4xl font-bold mb-2">Личный кабинет</h1>
                 <p className="text-xl text-muted-foreground">
-                  Добро пожаловать, Александр!
+                  Добро пожаловать, {userName}!
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Текущий тариф: <span className="text-primary font-medium">{getPlanLabel(currentPlan)}</span>
                 </p>
               </div>
               <Button variant="outline" onClick={handleLogout}>
@@ -147,7 +85,7 @@ const Profile = () => {
 
             {/* Minutes Balance */}
             <div className="mb-8">
-              <MinutesBalance />
+              <MinutesBalance balance={minutesBalance} />
             </div>
 
             {/* Resources Section - Checklists, Guides, Collections, Recommendations */}
@@ -168,7 +106,7 @@ const Profile = () => {
                       Пошаговые списки для эффективного обучения
                     </p>
                     <p className="text-sm font-medium text-muted-foreground">
-                      Недоступно
+                      {checklistsCount > 0 ? `${checklistsCount} доступно` : 'Недоступно'}
                     </p>
                   </div>
 
@@ -182,7 +120,7 @@ const Profile = () => {
                       Подробные руководства по темам
                     </p>
                     <p className="text-sm font-medium text-muted-foreground">
-                      Недоступно
+                      {guidesCount > 0 ? `${guidesCount} доступно` : 'Недоступно'}
                     </p>
                   </div>
 
@@ -196,7 +134,7 @@ const Profile = () => {
                       Кураторские подборки материалов
                     </p>
                     <p className="text-sm font-medium text-muted-foreground">
-                      Недоступно
+                      {collectionsCount > 0 ? `${collectionsCount} доступно` : 'Недоступно'}
                     </p>
                   </div>
 
@@ -210,7 +148,7 @@ const Profile = () => {
                       Персональные советы по обучению
                     </p>
                     <p className="text-sm font-medium text-muted-foreground">
-                      Недоступно
+                      {recommendationsCount > 0 ? `${recommendationsCount} доступно` : 'Недоступно'}
                     </p>
                   </div>
                 </div>
@@ -220,7 +158,7 @@ const Profile = () => {
             {/* Plans & Promo Grid */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               {/* Plans Section */}
-              <Card className="border-border h-full hover:border-primary/50 transition-all cursor-pointer" onClick={() => window.location.href = '/products'}>
+              <Card className="border-border h-full hover:border-primary/50 transition-all cursor-pointer" onClick={() => navigate('/products')}>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>Доступные тарифы</span>
@@ -230,19 +168,19 @@ const Profile = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-4">
-                    <div className="bg-muted/50 rounded-lg px-4 py-2">
+                    <div className={`rounded-lg px-4 py-2 ${currentPlan === 'free' ? 'bg-primary/20 border border-primary' : 'bg-muted/50'}`}>
                       <span className="text-sm font-medium">Базовый</span>
                       <span className="text-xs text-muted-foreground ml-2">Бесплатно</span>
                     </div>
-                    <div className="bg-muted/50 rounded-lg px-4 py-2">
+                    <div className={`rounded-lg px-4 py-2 ${currentPlan === 'medium' ? 'bg-primary/20 border border-primary' : 'bg-muted/50'}`}>
                       <span className="text-sm font-medium">Medium</span>
                       <span className="text-xs text-muted-foreground ml-2">13 500₽</span>
                     </div>
-                    <div className="bg-primary/20 border border-primary rounded-lg px-4 py-2">
+                    <div className={`rounded-lg px-4 py-2 ${currentPlan === 'plus' ? 'bg-primary/20 border border-primary' : 'bg-muted/50'}`}>
                       <span className="text-sm font-medium">Plus</span>
                       <span className="text-xs text-muted-foreground ml-2">25 000₽</span>
                     </div>
-                    <div className="bg-muted/50 rounded-lg px-4 py-2">
+                    <div className={`rounded-lg px-4 py-2 ${currentPlan === 'premium' ? 'bg-primary/20 border border-primary' : 'bg-muted/50'}`}>
                       <span className="text-sm font-medium">Premium</span>
                       <span className="text-xs text-muted-foreground ml-2">57 500₽</span>
                     </div>
@@ -258,9 +196,10 @@ const Profile = () => {
             <ReferralProgram />
           </div>
         </div>
-
       </main>
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Profile;
